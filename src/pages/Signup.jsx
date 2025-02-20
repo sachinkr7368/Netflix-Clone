@@ -2,14 +2,19 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
 } from "firebase/auth";
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import styled from "styled-components";
+import toast from "react-hot-toast";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
+import { firebaseAuth } from "../utils/firebase-config";
 import BackgroundImage from "../components/BackgroundImage";
 import Header from "../components/Header";
-import { firebaseAuth } from "../utils/firebase-config";
+
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [formValues, setFormValues] = useState({
     email: "",
     password: "",
@@ -21,7 +26,14 @@ function Signup() {
       const { email, password } = formValues;
       await createUserWithEmailAndPassword(firebaseAuth, email, password);
     } catch (error) {
-      console.log(error);
+      const errorMessages = {
+        "auth/email-already-in-use": "This email is already registered.",
+        "auth/invalid-email": "Invalid email format.",
+        "auth/weak-password": "Password should be at least 6 characters.",
+      };
+      toast.error(
+        errorMessages[error.code] || "Failed to create account. Try again."
+      );
     }
   };
 
@@ -56,24 +68,32 @@ function Signup() {
               value={formValues.email}
             />
             {showPassword && (
-              <input
-                type="password"
-                placeholder="Password"
-                onChange={(e) =>
-                  setFormValues({
-                    ...formValues,
-                    [e.target.name]: e.target.value,
-                  })
-                }
-                name="password"
-                value={formValues.password}
-              />
+              <div className="password-container">
+                <input
+                  type={passwordVisible ? "text" : "password"}
+                  placeholder="Password"
+                  onChange={(e) =>
+                    setFormValues({
+                      ...formValues,
+                      [e.target.name]: e.target.value,
+                    })
+                  }
+                  name="password"
+                  value={formValues.password}
+                />
+                <span
+                  className="icon"
+                  onClick={() => setPasswordVisible(!passwordVisible)}
+                >
+                  {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
             )}
             {!showPassword && (
               <button onClick={() => setShowPassword(true)}>Get Started</button>
             )}
           </div>
-          {showPassword && <button onClick={handleSignIn}>Log In</button>}
+          {showPassword && <button onClick={handleSignIn}>Sign Up</button>}
         </div>
       </div>
     </Container>
@@ -114,6 +134,22 @@ const Container = styled.div`
           border: 1px solid black;
           &:focus {
             outline: none;
+          }
+        }
+        .password-container {
+          position: relative;
+          display: flex;
+          align-items: center;
+          input {
+            width: 100%;
+            padding-right: 3rem;
+          }
+          .icon {
+            position: absolute;
+            right: 1rem;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: gray;
           }
         }
         button {

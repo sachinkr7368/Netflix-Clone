@@ -7,20 +7,24 @@ import Player from "./pages/Player";
 import Signup from "./pages/Signup";
 import TVShows from "./pages/TVShows";
 import UserListedMovies from "./pages/UserListedMovies";
+import { Toaster } from "react-hot-toast";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route exact path="/login" element={<Login />} />
-        <Route exact path="/signup" element={<Signup />} />
-        <Route exact path="/player" element={<Player />} />
-        <Route exact path="/tv" element={<TVShows />} />
-        <Route exact path="/movies" element={<MoviePage />} />
-        <Route exact path="/new" element={<Player />} />
-        <Route exact path="/mylist" element={<UserListedMovies />} />
-        <Route exact path="/" element={<Netflix />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <Toaster position="top-center" reverseOrder={false} />
+      <BrowserRouter>
+        <Routes>
+          <Route exact path="/login" element={<Login />} />
+          <Route exact path="/signup" element={<Signup />} />
+          <Route exact path="/player" element={<Player />} />
+          <Route exact path="/tv" element={<TVShows />} />
+          <Route exact path="/movies" element={<MoviePage />} />
+          <Route exact path="/new" element={<Player />} />
+          <Route exact path="/mylist" element={<UserListedMovies />} />
+          <Route exact path="/" element={<Netflix />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
