@@ -21,19 +21,16 @@ function MoviePage() {
 
   useEffect(() => {
     dispatch(getGenres());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (genresLoaded) {
       dispatch(fetchMovies({ genres, type: "movie" }));
     }
-  }, [genresLoaded]);
-
-  const [user, setUser] = useState(undefined);
+  }, [genresLoaded, genres, dispatch]);
 
   onAuthStateChanged(firebaseAuth, (currentUser) => {
-    if (currentUser) setUser(currentUser.uid);
-    else navigate("/login");
+    if (!currentUser) navigate("/login");
   });
 
   window.onscroll = () => {

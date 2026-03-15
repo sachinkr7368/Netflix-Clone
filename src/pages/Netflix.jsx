@@ -21,13 +21,13 @@ function Netflix() {
 
   useEffect(() => {
     dispatch(getGenres());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (genresLoaded) {
       dispatch(fetchMovies({ genres, type: "all" }));
     }
-  }, [genresLoaded]);
+  }, [genresLoaded, genres, dispatch]);
 
   const heroMovie = movies ? movies[Math.floor(Math.random() * movies.length)] : null;
 
