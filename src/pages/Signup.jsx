@@ -1,11 +1,6 @@
-import {
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-} from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import styled from "styled-components";
-import toast from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import { firebaseAuth } from "../utils/firebase-config";
@@ -19,11 +14,16 @@ function Signup() {
     email: "",
     password: "",
   });
-  const navigate = useNavigate();
+  const [error, setError] = useState("");
 
   const handleSignIn = async () => {
+    setError("");
+    const { email, password } = formValues;
+
+    if (!email) return setError("Email is required.");
+    if (showPassword && !password) return setError("Password is required for signup.");
+
     try {
-      const { email, password } = formValues;
       await createUserWithEmailAndPassword(firebaseAuth, email, password);
     } catch (error) {
       const errorMessages = {
@@ -31,15 +31,11 @@ function Signup() {
         "auth/invalid-email": "Invalid email format.",
         "auth/weak-password": "Password should be at least 6 characters.",
       };
-      toast.error(
+      setError(
         errorMessages[error.code] || "Failed to create account. Try again."
       );
     }
   };
-
-  onAuthStateChanged(firebaseAuth, (currentUser) => {
-    if (currentUser) navigate("/");
-  });
 
   return (
     <Container showPassword={showPassword}>
@@ -55,20 +51,23 @@ function Signup() {
             </h6>
           </div>
           <div className="form">
-            <input
-              type="email"
-              placeholder="Email address"
-              onChange={(e) =>
-                setFormValues({
-                  ...formValues,
-                  [e.target.name]: e.target.value,
-                })
-              }
-              name="email"
-              value={formValues.email}
-            />
+            <div className="input-group">
+              <input
+                type="email"
+                placeholder="Email address"
+                onChange={(e) =>
+                  setFormValues({
+                    ...formValues,
+                    [e.target.name]: e.target.value,
+                  })
+                }
+                name="email"
+                value={formValues.email}
+              />
+              {!showPassword && error && <div className="error">{error}</div>}
+            </div>
             {showPassword && (
-              <div className="password-container">
+              <div className="input-group password-container">
                 <input
                   type={passwordVisible ? "text" : "password"}
                   placeholder="Password"
@@ -87,6 +86,7 @@ function Signup() {
                 >
                   {passwordVisible ? <FaEyeSlash /> : <FaEye />}
                 </span>
+                {showPassword && error && <div className="error">{error}</div>}
               </div>
             )}
             {!showPassword && (
@@ -126,14 +126,44 @@ const Container = styled.div`
         grid-template-columns: ${({ showPassword }) =>
           showPassword ? "1fr 1fr" : "2fr 1fr"};
         width: 60%;
-        input {
-          color: black;
-          border: none;
-          padding: 1.5rem;
-          font-size: 1.2rem;
-          border: 1px solid black;
-          &:focus {
-            outline: none;
+        .input-group {
+          position: relative;
+          width: 100%;
+          input {
+            width: 100%;
+            color: black;
+            border: none;
+            padding: 1.5rem;
+            font-size: 1.2rem;
+            border: 1px solid black;
+            box-sizing: border-box;
+            &:focus {
+              outline: none;
+            }
+          }
+          .error {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #e87c03;
+            color: white;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            text-align: left;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            
+            &::after {
+              content: "";
+              position: absolute;
+              bottom: 100%;
+              left: 15px;
+              border-width: 6px;
+              border-style: solid;
+              border-color: transparent transparent #e87c03 transparent;
+            }
           }
         }
         .password-container {
@@ -141,7 +171,6 @@ const Container = styled.div`
           display: flex;
           align-items: center;
           input {
-            width: 100%;
             padding-right: 3rem;
           }
           .icon {

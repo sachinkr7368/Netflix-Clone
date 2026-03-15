@@ -2,9 +2,12 @@
 
 Challenge to build a clone of NETFLIX web app with the TMDB API data. The goal was to show movies and Web series information on Webpage.
 
-  - Good UI/UX 
+  - Good UI/UX (Industry Grade, Refactored)
   - Responsive Design and Everything
+  - Local Storage implemented for "My List" - entirely Frontend!
   - Supports Mobile Browser
+  - Code Caching / Lazy Loading for Performance
+  - Firebase Authentication + Protected Routes
 
 ## Built With
   - [Reactjs](https://reactjs.org/) - The framework Used to Build
@@ -39,15 +42,17 @@ Challenge to build a clone of NETFLIX web app with the TMDB API data. The goal w
   - The top bar seemed empty, so I added a login and Signup so it looks better and later i can implement its functionality also.
   - Added Icon according to the category and subnavs to for better experience in phone and pc if we later want to go with category.
   
-  ## For backend
-  - Used node and mongo connect to server and can add fav movies in the list and remove
+## Architecture & Performance Updates
+  - Completely refactored to remove the legacy Node/MongoDB backend in favor of robust Redux/LocalStorage integrations.
+  - Implemented Route Protection handling, forcing unauthenticated users back to login page.
+  - Added React.lazy Route Code-splitting to minimize bundle size.
+  - Form validation with Netflix-style error tooltips!
   
   ### Running process
-   - Download the zip file in ur PC
-   - unzip and run with vs code
-   - install all libraries using  npm i
-   - then run it on local server using npm start
-   - now run the backend server in api folder using node.  it will connect to the server
+   - Download or clone the repository.
+   - Run `npm install` to download all latest dependencies.
+   - Run `npm start` to spin up the local development server on port 3000.
+   - Note: No backend server required anymore! All "My List" features are cached in browser localStorage.
    
-   Thanks.
+   Thanks!
 

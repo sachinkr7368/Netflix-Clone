@@ -4,8 +4,6 @@ import Navbar from "../components/Navbar";
 import backgroundImage from "../assets/home.jpg";
 import MovieLogo from "../assets/homeTitle.webp";
 
-import { onAuthStateChanged } from "firebase/auth";
-import { firebaseAuth } from "../utils/firebase-config";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchMovies, getGenres } from "../store";
@@ -23,17 +21,15 @@ function Netflix() {
 
   useEffect(() => {
     dispatch(getGenres());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (genresLoaded) {
       dispatch(fetchMovies({ genres, type: "all" }));
     }
-  }, [genresLoaded]);
+  }, [genresLoaded, genres, dispatch]);
 
-  onAuthStateChanged(firebaseAuth, (currentUser) => {
-    if (!currentUser) navigate("/login");
-  });
+  const heroMovie = movies ? movies[Math.floor(Math.random() * movies.length)] : null;
 
   window.onscroll = () => {
     setIsScrolled(window.pageYOffset === 0 ? false : true);
@@ -45,13 +41,23 @@ function Netflix() {
       <Navbar isScrolled={isScrolled} />
       <div className="hero">
         <img
-          src={backgroundImage}
+          src={
+            heroMovie?.image 
+            ? `https://image.tmdb.org/t/p/original${heroMovie.image}` 
+            : backgroundImage
+          }
           alt="background"
           className="background-image"
         />
         <div className="container">
-          <div className="logo">
-            <img src={MovieLogo} alt="Movie Logo" />
+          <div className="logo" style={heroMovie ? { display: "flex", alignItems: "flex-end", paddingBottom: "2rem" } : {}}>
+            {heroMovie ? (
+              <h1 style={{ fontSize: "5rem", textShadow: "2px 2px 4px rgba(0,0,0,0.8)" }}>
+                {heroMovie.name}
+              </h1>
+            ) : (
+              <img src={MovieLogo} alt="Movie Logo" />
+            )}
           </div>
           <div className="buttons flex">
             <button

@@ -79,23 +79,44 @@ export const fetchMovies = createAsyncThunk(
 export const getUsersLikedMovies = createAsyncThunk(
   "netflix/getLiked",
   async (email) => {
-    const {
-      data: { movies },
-    } = await axios.get(`http://localhost:5000/api/user/liked/${email}`);
-    return movies;
+    const listKey = `netflix_liked_movies_${email}`;
+    const storedMovies = localStorage.getItem(listKey);
+    return storedMovies ? JSON.parse(storedMovies) : [];
+  }
+);
+
+export const addMovieToLiked = createAsyncThunk(
+  "netflix/addLiked",
+  async ({ email, data }) => {
+    const listKey = `netflix_liked_movies_${email}`;
+    const storedMovies = localStorage.getItem(listKey);
+    let moviesList = storedMovies ? JSON.parse(storedMovies) : [];
+    
+    // Check if the movie already exists
+    const movieExists = moviesList.find((movie) => movie.id === data.id);
+    if (!movieExists) {
+      moviesList.push(data);
+      localStorage.setItem(listKey, JSON.stringify(moviesList));
+    }
+    return moviesList;
   }
 );
 
 export const removeMovieFromLiked = createAsyncThunk(
   "netflix/deleteLiked",
   async ({ movieId, email }) => {
-    const {
-      data: { movies },
-    } = await axios.put("http://localhost:5000/api/user/remove", {
-      email,
-      movieId,
-    });
-    return movies;
+    const listKey = `netflix_liked_movies_${email}`;
+    const storedMovies = localStorage.getItem(listKey);
+    if (!storedMovies) return [];
+    
+    let moviesList = JSON.parse(storedMovies);
+    const movieIndex = moviesList.findIndex((movie) => movie.id === movieId);
+    
+    if (movieIndex !== -1) {
+      moviesList.splice(movieIndex, 1);
+      localStorage.setItem(listKey, JSON.stringify(moviesList));
+    }
+    return moviesList;
   }
 );
 
@@ -117,6 +138,9 @@ const NetflixSlice = createSlice({
       state.movies = action.payload;
     });
     builder.addCase(removeMovieFromLiked.fulfilled, (state, action) => {
+      state.movies = action.payload;
+    });
+    builder.addCase(addMovieToLiked.fulfilled, (state, action) => {
       state.movies = action.payload;
     });
   },
