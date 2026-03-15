@@ -1,6 +1,5 @@
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import {
-  onAuthStateChanged,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
@@ -11,7 +10,6 @@ import toast from "react-hot-toast";
 
 import { firebaseAuth } from "../utils/firebase-config";
 import BackgroundImage from "../components/BackgroundImage";
-import Header from "../components/Header";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -55,9 +53,7 @@ function Login() {
     }
   };
 
-  onAuthStateChanged(firebaseAuth, (currentUser) => {
-    if (currentUser) navigate("/");
-  });
+
 
   return (
     <Container>
@@ -154,10 +150,28 @@ const Container = styled.div`
             font-size: 1rem;
           }
           .error {
-            color: #e50914;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #e87c03;
+            color: white;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
             font-size: 0.85rem;
-            margin-top: 5px;
+            margin-top: 6px;
             text-align: left;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            
+            &::after {
+              content: "";
+              position: absolute;
+              bottom: 100%;
+              left: 15px;
+              border-width: 6px;
+              border-style: solid;
+              border-color: transparent transparent #e87c03 transparent;
+            }
           }
         }
 

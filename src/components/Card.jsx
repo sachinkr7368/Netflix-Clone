@@ -6,31 +6,20 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { RiThumbUpFill, RiThumbDownFill } from "react-icons/ri";
 import { BiChevronDown } from "react-icons/bi";
 import { BsCheck } from "react-icons/bs";
-import axios from "axios";
-import { onAuthStateChanged } from "firebase/auth";
 import { firebaseAuth } from "../utils/firebase-config";
 import { useDispatch } from "react-redux";
-import { removeMovieFromLiked } from "../store";
+import { removeMovieFromLiked, addMovieToLiked } from "../store";
 import video from "../assets/video.mp4";
 
 export default React.memo(function Card({ index, movieData, isLiked = false }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isHovered, setIsHovered] = useState(false);
-  const [email, setEmail] = useState(undefined);
-
-  onAuthStateChanged(firebaseAuth, (currentUser) => {
-    if (currentUser) {
-      setEmail(currentUser.email);
-    } else navigate("/login");
-  });
+  const email = firebaseAuth.currentUser?.email;
 
   const addToList = async () => {
     try {
-      await axios.post("http://localhost:5000/api/user/add", {
-        email,
-        data: movieData,
-      });
+      dispatch(addMovieToLiked({ email, data: movieData }));
     } catch (error) {
       console.log(error);
     }
