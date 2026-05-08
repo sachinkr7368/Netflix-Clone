@@ -1,5 +1,9 @@
 # Netflix-Clone-MERN-stack
 
+
+
+
+
 Challenge to build a clone of NETFLIX web app with the TMDB API data. The goal was to show movies and Web series information on Webpage.
 
   - Good UI/UX (Industry Grade, Refactored)
